@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>파일명</title>
+  </head>
+  <!-- v-if에 대한 사례 -->
+  <body>
+    <div id="app">
+      <h1>v-if</h1>
+      <!-- v-if를 사용: 각 화면이 보이거나 보이지 않게 하기위해 사용 -->
+      <!-- button에 click 이벤트를 붙여서 누르면 다음 화면으로 이동하도록 설정 -->
+      <div v-if="step === 1">
+        <h3>1단계 화면</h3>
+        <button @click="step =2">다음</button>
+      </div>
+      <div v-else-if="step === 2">
+        <h3>2단계 화면</h3>
+        <button @click="step =1">이전</button>
+        <button @click="step =3">다음</button>
+      </div>
+      <div v-else="step === 3">
+        <!-- step===3는 삭제해도 무방 -->
+        <h3>3단계 화면</h3>
+        <button @click="step =2">이전</button>
+      </div>
+    </div>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script type="text/javascript">
+      const { createApp } = Vue;
+
+      let vm = createApp({
+        name: 'App',
+        data() {
+          return {
+            step: 1,
+          };
+        },
+      });
+      vm.mount('#app');
+    </script>
+  </body>
+</html>

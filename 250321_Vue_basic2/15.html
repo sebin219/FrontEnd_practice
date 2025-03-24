@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>\</title>
+    <style>
+      [v-clock] {
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <h1>v-pre</h1>
+      <p>{{message}}</p>
+      <p v-pre>{{message}}</p>
+      <!-- v-pre를 붙이면 머스타치 문법 전체를 다 그대로 출력해버림 -->
+      <pre>
+               코드를 작성 하 지 않아도 됨
+               어쩌구 저쩌꾸 집가구싶다
+
+        </pre
+      >
+      <!-- 입력된 그대로 출력됨 -->
+      <h1>v-once</h1>
+      <div>
+        <h3>일반적 데이터 바인딩</h3>
+        <p>{{counter}}</p>
+        <p v-once>{{counter}}</p>
+        <!-- 초기값을 유지하고 변경을 무시하고 싶을 때 사용 -->
+        <button @click="increment">증가하기</button>
+      </div>
+
+      <h1>v-clock</h1>
+      <div v-clock>
+        <p>{{message}}</p>
+        <button @click=""></button>
+      </div>
+    </div>
+
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script type="text/javascript">
+      const { createApp } = Vue;
+
+      setTimeout(() => {
+        let vm = createApp({
+          name: 'App',
+          data() {
+            return {
+              message: 'Hello Vue!',
+              counter: 1,
+            };
+          },
+          methods: {
+            increment() {
+              this.counter++;
+            },
+            change() {
+              this.message = '변경됐어요';
+            },
+          },
+        });
+        vm.mount('#app');
+      }, 1000);
+    </script>
+  </body>
+</html>

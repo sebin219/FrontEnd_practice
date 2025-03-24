@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>파일명</title>
+    <style>
+      .login {
+        background-color: lightgreen;
+        padding: 1rem;
+      }
+      .login > * {
+        display: block;
+        width: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      {{message}}
+      <ul>
+        <li v-for="item in items" :key="item.id" hidden>{{item.title}}</li>
+      </ul>
+      <hr />
+      <template v-for="item in items" :key="item.id">
+        <div>{{item.title}}</div>
+        <div>{{item.description}}</div>
+        <hr />
+      </template>
+      <!-- template은 dom에 출력되지 않음 -->
+      <!-- form요소의 직계자식은 template이 아니고 label, input, span임 -->
+      <form class="login">
+        <template v-for="field in formFields" :key="field.id">
+          <label :for="field.id">{{field.label}}</label>
+          <input
+            :type="field.type"
+            :id="field.id"
+            :name="field.id"
+            :required="field.required"
+          />
+          <span v-if="field.helpText">{{field.helpText}}</span>
+          <hr />
+        </template>
+        <button type="submit">제출</button>
+      </form>
+      <!-- form 내부 요소를 div로 묶어서 적용하지 말고. 템플릿으로 묶어서 반복 사용 가능
+       div로 묶어서 단계가 많아지면 후에 css에서 적용하기 힘듦 -->
+    </div>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script type="text/javascript">
+      const { createApp } = Vue;
+
+      let vm = createApp({
+        name: 'App',
+        data() {
+          return {
+            items: [
+              { id: 1, title: '제목1', description: '내용1' },
+              { id: 2, title: '제목2', description: '내용2' },
+              { id: 3, title: '제목3', description: '내용3' },
+            ],
+            formFields: [
+              {
+                id: 'name',
+                label: '이름',
+                type: 'text',
+                required: true,
+              },
+              {
+                id: 'email',
+                label: '이메일',
+                type: 'email',
+                required: true,
+              },
+              {
+                id: 'password',
+                label: '비밀번호',
+                type: 'password',
+                required: true,
+                helpText: '8자 이상 입력해주세요',
+              },
+            ],
+          };
+        },
+      });
+      vm.mount('#app');
+    </script>
+  </body>
+</html>

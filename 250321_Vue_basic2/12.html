@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>파일명</title>
+  </head>
+  <body>
+    <div id="app">
+      <h1>for - object</h1>
+      <ul>
+        <li v-for="(value, key, i) in user">{{i}}-{{key}}-{{value}}</li>
+        <!-- value가 key. key가 value여도 그냥 ()안에 적힌 순서대로 배정되어서 나옴 -->
+      </ul>
+      <ul>
+        <li v-for="(list, i) in arr">{{i}}-{{list}}</li>
+        <!-- 배열에서는 소괄호 안에 세개의 정보를 넣을 수 없음 -->
+      </ul>
+    </div>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script type="text/javascript">
+      const { createApp } = Vue;
+
+      let vm = createApp({
+        name: 'App',
+        data() {
+          return {
+            user: {
+              name: '세빈',
+              age: 27,
+              email: 'test@test.com',
+            },
+            arr: [1, 2, 3],
+          };
+        },
+      });
+      vm.mount('#app');
+    </script>
+  </body>
+</html>
