@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>계산된 속성 - 상태 및 조건 확인</title>
+    <style>
+      .form-group {
+        margin-bottom: 15px;
+      }
+      .form-control {
+        width: 100%;
+        padding: 8px;
+        margin-top: 5px;
+      }
+      .card {
+        border: 1px solid #ddd;
+        padding: 15px;
+        margin-bottom: 20px;
+        border-radius: 4px;
+      }
+      .btn {
+        padding: 8px 15px;
+        background-color: #4caf50;
+        color: white;
+        border: none;
+        cursor: pointer;
+        border-radius: 4px;
+      }
+      .btn:disabled {
+        background-color: #cccccc;
+        cursor: not-allowed;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <h2>3. 상태 및 조건 확인</h2>
+      <p>
+        폼 유효성 검사, 장바구니 상태 확인, 사용자 등급 계산 등에 활용됩니다.
+      </p>
+
+      <!-- 폼 유효성 검사 예제 -->
+      <div class="card">
+        <h3>폼 유효성 검사</h3>
+        <div class="form-group">
+          <label for="username">사용자 이름 (최소 3자 이상)</label>
+          <input
+            type="text"
+            id="username"
+            class="form-control"
+            placeholder="사용자 이름 입력"
+            v-model="username"
+          />
+        </div>
+        <div class="form-group">
+          <label for="email">이메일 (@가 포함되어야 함)</label>
+          <input
+            type="email"
+            id="email"
+            class="form-control"
+            placeholder="이메일 입력"
+            v-model="email"
+          />
+        </div>
+        <div class="form-group">
+          <label for="password">비밀번호 (최소 8자 이상)</label>
+          <input
+            type="password"
+            id="password"
+            class="form-control"
+            placeholder="비밀번호 입력"
+            v-model="password"
+          />
+        </div>
+        <button class="btn" :disabled="!isFormValid">등록하기</button>
+        <p>폼 유효성 상태: {{ isFormValid ? '유효함' : '유효하지 않음' }}</p>
+      </div>
+    </div>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script type="text/javascript">
+      const { createApp } = Vue;
+      let vm = createApp({
+        name: 'App',
+        data() {
+          return {
+            // 폼 유효성 검사 관련 데이터
+            username: '',
+            email: '',
+            password: '',
+          };
+        },
+        computed: {
+          // 폼 유효성 검사
+          isFormValid() {
+            return (
+              this.username.length >= 3 &&
+              this.email.includes('@') &&
+              this.password.length >= 8
+            );
+          },
+        },
+      });
+      vm.mount('#app');
+    </script>
+  </body>
+</html>

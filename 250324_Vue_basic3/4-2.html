@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>파일명</title>
+  </head>
+  <body>
+    <div id="app">
+      <button @click="sorting">
+        <!-- 위아래 버튼 기능 같지만 위는 아래에다 methods로 나타내고 아래는 직접 적은 경우임 -->
+        <!-- <button @click="sortDir = sortDir==='asc' ? 'desc' : 'asc'"> -->
+        {{sortDir === 'asc' ? '오름차순' : '내림차순'}}
+      </button>
+
+      <ul>
+        <li v-for="item in sortItems" :key="item.name">
+          <span>{{item.name}}</span> -
+          <span>{{item.price}}</span>
+        </li>
+      </ul>
+    </div>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script type="text/javascript">
+      const { createApp } = Vue;
+
+      let vm = createApp({
+        name: 'App',
+        data() {
+          return {
+            items: [
+              { name: '노트북', price: 1200000 },
+              { name: '스마트폰', price: 1500000 },
+              { name: '태블릿', price: 1000000 },
+              { name: '핸드폰', price: 2000000 },
+            ],
+            sortKey: 'price',
+            sortDir: 'asc',
+          };
+        },
+        computed: {
+          sortItems() {
+            return [...this.items].sort((a, b) => {
+              return this.sortDir === 'asc'
+                ? a[this.sortKey] - b[this.sortKey]
+                : b[this.sortKey] - a[this.sortKey];
+            });
+            //초기 데이터들은 새로운 배열로 저장되는 것이기 때문에 기존의 데이터를 바꾸는 것은 안 됨
+          },
+        },
+        methods: {
+          sorting() {
+            this.sortDir = this.sortDir === 'asc' ? 'desc' : 'asc';
+          },
+        },
+      });
+      vm.mount('#app');
+    </script>
+  </body>
+</html>
