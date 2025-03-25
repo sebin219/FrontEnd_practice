@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vue 3 마우스 이벤트 수식어 예제</title>
+    <style>
+      .container {
+        max-width: 800px;
+        padding: 20px;
+        font-family: Arial, sans-serif;
+      }
+      .box {
+        width: 200px;
+        height: 200px;
+        background-color: #f0f0f0;
+        border: 1px solid #ccc;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: 10px 0;
+        user-select: none;
+      }
+      .right-click-menu {
+        position: absolute;
+        background-color: white;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        padding: 5px 0;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+      .menu-item {
+        padding: 8px 15px;
+        cursor: pointer;
+      }
+      .menu-item:hover {
+        background-color: #f5f5f5;
+      }
+      .drawing-area {
+        border: 1px solid #ccc;
+        background-color: #fff;
+        width: 100%;
+        height: 300px;
+        position: relative;
+        overflow: hidden;
+      }
+      .draw-point {
+        position: absolute;
+        width: 6px;
+        height: 6px;
+        background-color: #333;
+        border-radius: 50%;
+        transform: translate(-3px, -3px);
+      }
+      .button-row {
+        display: flex;
+        gap: 10px;
+        margin: 10px 0;
+      }
+      button {
+        padding: 8px 12px;
+        cursor: pointer;
+      }
+      .action-description {
+        margin: 5px 0;
+        padding: 8px;
+        background-color: #f5f5f5;
+        border-radius: 4px;
+      }
+      .logs {
+        margin-top: 20px;
+        border: 1px solid #eee;
+        padding: 10px;
+        max-height: 200px;
+        overflow-y: auto;
+        background-color: #fafafa;
+      }
+      .log-entry {
+        margin: 5px 0;
+        padding: 5px;
+        border-bottom: 1px solid #eee;
+      }
+      .logsContainer {
+        position: fixed;
+        right: 30px;
+        top: 200px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app" class="container">
+      <h1>마우스 이벤트 수식어 예제</h1>
+
+      <h2>1. 마우스 버튼 수식어 (left, right, middle)</h2>
+      <div
+        class="box"
+        @click.left="logEvent('왼쪽 버튼 클릭')"
+        @click.right.prevent="showRightClickMenu"
+        @click.middle="logEvent('가운데 버튼 클릭')"
+      >
+        이 상자에서 마우스 버튼을 클릭하세요
+      </div>
+
+      <!-- 우클릭 메뉴 -->
+      <div v-if="showMenu" class="right-click-menu" :style="menuPosition">
+        <div class="menu-item" @click="menuAction('복사')">복사</div>
+        <div class="menu-item" @click="menuAction('붙여넣기')">붙여넣기</div>
+        <div class="menu-item" @click="menuAction('자르기')">자르기</div>
+      </div>
+
+      <h2>2. 키 수식어와 함께 사용</h2>
+      <div
+        class="box"
+        @click.ctrl="logEvent('CTRL + 클릭')"
+        @click.shift="logEvent('SHIFT + 클릭')"
+        @click.alt="logEvent('ALT + 클릭')"
+        @click.meta="logEvent('META + 클릭')"
+      >
+        CTRL, SHIFT, ALT 또는 META 키를 누른 상태에서 클릭하세요
+      </div>
+
+      <h2>3. 조합 수식어 활용</h2>
+      <div
+        class="box"
+        @click.right.ctrl.prevent="logEvent('CTRL + 우클릭 (기본 메뉴 방지)')"
+        @click.left.shift="logEvent('SHIFT + 좌클릭')"
+      >
+        여러 수식어를 조합해 사용해보세요
+      </div>
+
+      <h2>4. 드로잉 영역 (좌클릭으로 그리기, SHIFT+클릭으로 점 제거)</h2>
+      <div class="button-row">
+        <button @click="clearDrawing">모두 지우기</button>
+      </div>
+      <div
+        class="drawing-area"
+        @click.left="addPoint"
+        @click.shift="clearPoints"
+      >
+        <div
+          v-for="(point, index) in points"
+          :key="index"
+          class="draw-point"
+          :style="{ left: point.x + 'px', top: point.y + 'px' }"
+        ></div>
+      </div>
+      <div class="action-description">
+        <p>- 그냥 클릭: 점 추가</p>
+        <p>- SHIFT + 클릭: 해당 영역 점 제거</p>
+      </div>
+
+      <div class="logsContainer">
+        <h2>로그</h2>
+        <div class="logs">
+          <div v-if="logs.length === 0">아직 로그가 없습니다.</div>
+          <div v-for="(log, index) in logs" :key="index" class="log-entry">
+            {{ log }}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script>
+      const app = Vue.createApp({
+        data() {
+          return {
+            logs: [],
+            showMenu: false,
+            menuPosition: {
+              top: '0px',
+              left: '0px',
+            },
+            points: [],
+          };
+        },
+        methods: {
+          logEvent(message) {
+            this.logs.unshift(
+              `${message} (${new Date().toLocaleTimeString()})`
+            );
+            // 로그가 너무 많아지지 않도록 최근 20개만 유지
+            if (this.logs.length > 20) {
+              this.logs.pop();
+            }
+          },
+          showRightClickMenu(event) {
+            // 현재 마우스 위치에 메뉴 표시
+            this.menuPosition.left = `${event.clientX}px`;
+            this.menuPosition.top = `${event.clientY}px`;
+            this.showMenu = true;
+            this.logEvent('우클릭 메뉴 표시');
+
+            // 메뉴 외부 클릭 시 메뉴 닫기 이벤트 리스너 등록
+            setTimeout(() => {
+              document.addEventListener('click', this.hideMenu);
+            }, 0);
+          },
+          hideMenu() {
+            this.showMenu = false;
+            document.removeEventListener('click', this.hideMenu);
+          },
+          menuAction(action) {
+            this.logEvent(`메뉴 선택: ${action}`);
+            this.hideMenu();
+          },
+          addPoint(event) {
+            // 클릭 위치에 상대적인 좌표 계산
+            const rect = event.target.getBoundingClientRect();
+            const x = event.clientX - rect.left;
+            const y = event.clientY - rect.top;
+
+            this.points.push({ x, y });
+            this.logEvent(`점 추가: (${Math.round(x)}, ${Math.round(y)})`);
+          },
+          clearPoints(event) {
+            // 클릭 근처의 점들 제거 (10px 반경 내)
+            const rect = event.target.getBoundingClientRect();
+            const x = event.clientX - rect.left;
+            const y = event.clientY - rect.top;
+
+            const initialLength = this.points.length;
+            this.points = this.points.filter((point) => {
+              const distance = Math.sqrt(
+                Math.pow(point.x - x, 2) + Math.pow(point.y - y, 2)
+              );
+              return distance > 20; // 20px 반경 내의 점 제거
+            });
+
+            const removedCount = initialLength - this.points.length;
+            this.logEvent(
+              `점 제거: ${removedCount}개 (위치: ${Math.round(x)}, ${Math.round(
+                y
+              )})`
+            );
+          },
+          clearDrawing() {
+            const count = this.points.length;
+            this.points = [];
+            this.logEvent(`모든 점 제거: ${count}개`);
+          },
+        },
+        // 컴포넌트가 제거될 때 이벤트 리스너 정리
+        beforeUnmount() {
+          document.removeEventListener('click', this.hideMenu);
+        },
+      });
+
+      app.mount('#app');
+    </script>
+  </body>
+</html>

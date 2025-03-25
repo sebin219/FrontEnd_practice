@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vue 3 exact 수식어 예제</title>
+    <style>
+      .container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        font-family: Arial, sans-serif;
+      }
+      .demo-box {
+        border: 1px solid #ddd;
+        padding: 20px;
+        margin: 20px 0;
+        background-color: #f9f9f9;
+        border-radius: 4px;
+      }
+      .button-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+        margin-bottom: 20px;
+      }
+      button {
+        padding: 12px;
+        font-size: 14px;
+        border: 1px solid #ccc;
+        background-color: #fff;
+        cursor: pointer;
+        border-radius: 4px;
+        transition: background-color 0.2s;
+      }
+      button:hover {
+        background-color: #f0f0f0;
+      }
+      .action-log {
+        background-color: #fff;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        padding: 10px;
+        height: 200px;
+        overflow-y: auto;
+      }
+      .log-entry {
+        padding: 5px;
+        margin: 5px 0;
+        background-color: #f5f5f5;
+        border-radius: 3px;
+        border-left: 3px solid #42b983;
+      }
+      .key-hint {
+        font-size: 12px;
+        color: #666;
+        margin-top: 5px;
+      }
+      .highlight {
+        background-color: #e8f5e9;
+        border-color: #4caf50;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app" class="container">
+      <h1>.exact 수식어 예제</h1>
+      <p>
+        수식어 <code>.exact</code>는 지정한 조합의 시스템 키를 "정확하게" 누른
+        상태에서만 이벤트를 트리거합니다.
+      </p>
+
+      <div class="demo-box">
+        <h2>버튼 클릭 테스트</h2>
+        <p>다양한 키 조합을 누르면서 버튼을 클릭해보세요:</p>
+
+        <div class="button-grid">
+          <!-- 아무 키도 누르지 않고 클릭 -->
+          <button @click.exact="logAction('클릭만', 'exact')">
+            클릭만 (정확히)
+            <div class="key-hint">다른 키 없이 클릭만 했을 때만 작동</div>
+          </button>
+
+          <!-- 일반 클릭 -->
+          <button @click="logAction('일반 클릭')">
+            일반 클릭
+            <div class="key-hint">어떤 키든 함께 눌러도 작동</div>
+          </button>
+
+          <!-- Ctrl을 정확히만 누른 상태에서 클릭 -->
+          <button @click.ctrl.exact="logAction('Ctrl + 클릭', 'exact')">
+            Ctrl + 클릭 (정확히)
+            <div class="key-hint">정확히 Ctrl만 누른 상태에서 클릭</div>
+          </button>
+
+          <!-- Ctrl을 누른 상태에서 클릭 -->
+          <button @click.ctrl="logAction('Ctrl + 클릭')">
+            Ctrl + 클릭
+            <div class="key-hint">Ctrl + 다른 키도 함께 눌러도 작동</div>
+          </button>
+
+          <!-- Shift를 정확히만 누른 상태에서 클릭 -->
+          <button @click.shift.exact="logAction('Shift + 클릭', 'exact')">
+            Shift + 클릭 (정확히)
+            <div class="key-hint">정확히 Shift만 누른 상태에서 클릭</div>
+          </button>
+
+          <!-- Alt를 정확히만 누른 상태에서 클릭 -->
+          <button @click.alt.exact="logAction('Alt + 클릭', 'exact')">
+            Alt + 클릭 (정확히)
+            <div class="key-hint">정확히 Alt만 누른 상태에서 클릭</div>
+          </button>
+
+          <!-- Ctrl+Shift를 정확히 누른 상태에서 클릭 -->
+          <button
+            @click.ctrl.shift.exact="logAction('Ctrl + Shift + 클릭', 'exact')"
+          >
+            Ctrl + Shift + 클릭 (정확히)
+            <div class="key-hint">정확히 Ctrl+Shift만 누른 상태에서 클릭</div>
+          </button>
+
+          <!-- 마우스 오른쪽 버튼을 정확히 클릭 -->
+          <button @click.right.exact="logAction('오른쪽 클릭', 'exact')">
+            오른쪽 클릭 (정확히)
+            <div class="key-hint">정확히 다른 키 없이 오른쪽 클릭만</div>
+          </button>
+        </div>
+
+        <h3>테스트 결과:</h3>
+        <div class="action-log">
+          <div v-if="logs.length === 0">아직 버튼을 클릭하지 않았습니다.</div>
+          <div
+            v-for="(log, index) in logs"
+            :key="index"
+            class="log-entry"
+            :class="{ 'highlight': log.exact }"
+          >
+            {{ log.text }} {{ log.exact ? '(exact 수식어 성공!)' : '' }} - {{
+            log.time }}
+          </div>
+        </div>
+
+        <div style="margin-top: 20px">
+          <button @click="clearLogs">로그 지우기</button>
+        </div>
+      </div>
+
+      <div class="demo-box">
+        <h2>.exact 수식어 설명</h2>
+        <p>
+          시스템 키(ctrl, alt, shift, meta) 수식어는 일반적으로 해당 키가 눌렸을
+          때 이벤트가 발생하지만, 다른 키도 함께 눌려 있을 수 있습니다.
+        </p>
+        <p>
+          <strong>.exact 수식어의 역할:</strong> 지정된 시스템 키만 "정확히"
+          눌려있을 때 이벤트가 발생하도록 합니다.
+        </p>
+        <ul>
+          <li>
+            <code>@click.ctrl</code>: Ctrl 키가 눌려있으면 작동 (다른 키가 함께
+            눌러져 있어도 작동)
+          </li>
+          <li>
+            <code>@click.ctrl.exact</code>: Ctrl 키만 눌려있고 다른 키는 눌리지
+            않았을 때만 작동
+          </li>
+          <li>
+            <code>@click.exact</code>: 아무 시스템 키도 눌리지 않은 상태에서
+            클릭했을 때만 작동
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script>
+      const app = Vue.createApp({
+        data() {
+          return {
+            logs: [],
+          };
+        },
+        methods: {
+          logAction(action, exact) {
+            const now = new Date();
+            const timeString = `${now.toLocaleTimeString()}.${now
+              .getMilliseconds() //
+              .toString()
+              .padStart(3, '0')}`; // 밀리초까지 표시
+
+            this.logs.unshift({
+              text: action,
+              time: timeString,
+              exact: exact === 'exact',
+            });
+
+            // 로그가 너무 많아지지 않도록 최근 15개만 유지
+            if (this.logs.length > 15) {
+              this.logs.pop();
+            }
+          },
+          clearLogs() {
+            this.logs = [];
+          },
+        },
+      });
+
+      app.mount('#app');
+    </script>
+  </body>
+</html>
