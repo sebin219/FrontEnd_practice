@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title></title>
+  </head>
+  <body>
+    <div id="app">
+      <h1>컨포넌트의 생명주기</h1>
+    </div>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script type="text/javascript">
+      const { createApp } = Vue;
+      let vm = createApp({
+        name: 'App',
+        data() {
+          return {};
+        },
+        beforeCreate() {
+          // 인스턴스 초기화 직후, 데이터 관찰 및 이벤트 설정 전
+          console.log('beforeCreate');
+        },
+        created() {
+          // 인스턴스 생성 완료, 데이터 관찰 및 계산된 속성 설정 완료
+          console.log('created');
+        },
+        beforeMount() {
+          // 마운트 시작 직전에 호출
+          console.log('beforeMount');
+        },
+        mounted() {
+          // 컴포넌트가 DOM에 마운트된 후 호출
+          console.log('mounted');
+        },
+        beforeUpdate() {
+          // 데이터 변경으로 DOM이 재렌더링되기 직전에 호출
+          console.log('beforeUpdate');
+        },
+        updated() {
+          // DOM이 재렌더링된 후 호출
+          console.log('updated');
+        },
+        beforeUnmount() {
+          // 컴포넌트가 제거되기 직전에 호출
+          console.log('beforeUnmount');
+        },
+        unmounted() {
+          // 컴포넌트가 제거된 후 호출
+          console.log('unmounted');
+        },
+      });
+      vm.mount('#app');
+    </script>
+  </body>
+</html>

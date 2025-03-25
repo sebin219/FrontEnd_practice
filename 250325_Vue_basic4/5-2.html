@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>파일명</title>
+  </head>
+  <body>
+    <div id="app">
+      <label>이름</label>
+      <input type="text" v-model.trim="user.name" />
+      <label>이메일</label>
+      <input type="text" v-model.trim="user.email" />
+      <label>나이</label>
+      <input type="text" v-model.number="user.profile.age" />
+      <label>직업</label>
+      <input type="text" v-model.trim="user.profile.occupation" />
+      <div>내용이 변경됨 {{userChangeLog}}</div>
+    </div>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script type="text/javascript">
+      const { createApp } = Vue;
+
+      let vm = createApp({
+        name: 'App',
+        data() {
+          return {
+            user: {
+              name: '홍길동',
+              email: 'test@tt.tt',
+              profile: {
+                age: 5,
+                occupation: '개발자',
+              },
+            },
+            userChangeLog: '수정되기 전',
+          };
+        },
+        watch: {
+          user: {
+            handler(newValue) {
+              this.userChangeLog = `변경감지`;
+              this.userChangeLog += new Date().toLocaleTimeString();
+              this.userChangeLog += JSON.stringify(newValue);
+            },
+            deep: true,
+            immediate: true,
+          },
+        },
+      });
+      vm.mount('#app');
+    </script>
+  </body>
+</html>

@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title></title>
+
+    <style>
+      .chart-container {
+        width: 80%;
+        max-width: 800px;
+        margin: 20px auto;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <div class="chart-container">
+        <h2>{{ title }}</h2>
+        <!-- 차트를 위한 캔버스 요소 -->
+        <canvas ref="chartCanvas"></canvas>
+
+        <!-- 데이터 업데이트 버튼 -->
+        <div style="margin-top: 20px">
+          <button @click="updateData">데이터 업데이트</button>
+          <button @click="changeChartType">차트 유형 변경</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Vue 3 CDN -->
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+      // Vue 3의 createApp 함수를 가져옵니다.
+      const { createApp } = Vue;
+
+      // Vue 애플리케이션을 생성합니다.
+      createApp({
+        name: 'ChartExample', // 컴포넌트 이름
+
+        // 컴포넌트의 데이터를 정의합니다.
+        data() {
+          return {
+            title: '월별 판매 데이터', // 차트 제목
+            chartInstance: null, // Chart.js 인스턴스를 저장할 변수
+            chartTypes: ['bar', 'line', 'pie'], // 사용 가능한 차트 유형들
+            currentChartTypeIndex: 0, // 현재 선택된 차트 유형의 인덱스
+            chartData: {
+              labels: ['1월', '2월', '3월', '4월', '5월', '6월'], // x축 레이블
+              datasets: [
+                {
+                  label: '판매량', // 데이터셋 레이블
+                  data: [], // 실제 데이터 값 (빈 배열로 시작, mounted에서 채울 예정)
+                  // 각 데이터 항목의 배경색 (약간 투명)
+                  backgroundColor: [
+                    'rgba(255, 99, 132, 0.2)',
+                    'rgba(54, 162, 235, 0.2)',
+                    'rgba(255, 206, 86, 0.2)',
+                    'rgba(75, 192, 192, 0.2)',
+                    'rgba(153, 102, 255, 0.2)',
+                    'rgba(255, 159, 64, 0.2)',
+                  ],
+                  // 각 데이터 항목의 테두리 색상
+                  borderColor: [
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 206, 86, 1)',
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(153, 102, 255, 1)',
+                    'rgba(255, 159, 64, 1)',
+                  ],
+                  borderWidth: 1, // 테두리 두께
+                },
+              ],
+            },
+          };
+        },
+
+        // 컴포넌트의 메서드들을 정의합니다.
+        methods: {
+          // 랜덤 데이터 생성 함수 - 6개의 무작위 값(0-99)을 생성합니다.
+          generateRandomData() {
+            return Array.from({ length: 6 }, () =>
+              Math.floor(Math.random() * 100)
+            );
+          },
+
+          // 차트 초기화 및 생성 메서드
+          initChart() {
+            // 캔버스 요소의 참조를 가져옵니다.
+            const ctx = this.$refs.chartCanvas;
+
+            // 이미 차트 인스턴스가 존재하면 제거하여 메모리 누수를 방지합니다.
+            if (this.chartInstance) {
+              this.chartInstance.destroy();
+            }
+
+            // 새로운 차트 인스턴스를 생성합니다.
+            this.chartInstance = new Chart(ctx, {
+              type: this.chartTypes[this.currentChartTypeIndex], // 현재 선택된 차트 유형
+              data: this.chartData, // 차트에 표시할 데이터
+              options: {
+                responsive: true, // 반응형 차트 설정
+                scales: {
+                  y: {
+                    beginAtZero: true, // y축이 0부터 시작하도록 설정
+                  },
+                },
+              },
+            });
+          },
+
+          // 데이터 업데이트 메서드 - '데이터 업데이트' 버튼 클릭 시 호출됩니다.
+          updateData() {
+            // 새로운 랜덤 데이터 생성
+            const newData = this.generateRandomData();
+
+            // 데이터셋 업데이트
+            this.chartData.datasets[0].data = newData;
+
+            // 기존 차트 인스턴스 제거
+            if (this.chartInstance) {
+              this.chartInstance.destroy();
+            }
+
+            // 새로운 데이터로 차트를 다시 생성
+            this.$nextTick(() => {
+              this.initChart();
+            });
+          },
+
+          // 차트 타입 변경 메서드 - '차트 유형 변경' 버튼 클릭 시 호출됩니다.
+          changeChartType() {
+            // 다음 차트 타입으로 변경 (순환식으로)
+            this.currentChartTypeIndex =
+              (this.currentChartTypeIndex + 1) % this.chartTypes.length;
+
+            // 차트를 새로운 타입으로 다시 생성
+            this.initChart();
+          },
+        },
+
+        // 컴포넌트가 DOM에 마운트된 후 실행되는 라이프사이클 훅
+        mounted() {
+          // 초기 데이터를 랜덤으로 설정
+          this.chartData.datasets[0].data = this.generateRandomData();
+
+          // DOM 업데이트가 완료된 후 차트를 초기화
+          this.$nextTick(() => {
+            this.initChart();
+          });
+        },
+
+        // 컴포넌트가 언마운트되기 전에 실행되는 라이프사이클 훅
+        beforeUnmount() {
+          // 메모리 누수를 방지하기 위해 차트 인스턴스를 정리
+          if (this.chartInstance) {
+            this.chartInstance.destroy();
+          }
+        },
+      }).mount('#app'); // Vue 앱을 #app 요소에 마운트
+    </script>
+  </body>
+</html>

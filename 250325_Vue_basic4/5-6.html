@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>파일명</title>
+    <style>
+      .outer {
+        border: 1px solid red;
+        width: 100px;
+        height: 100px;
+        padding: 2rem;
+      }
+      .con {
+        border: 1px solid red;
+        height: 200px;
+        overflow-y: scroll;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <div class="outer" @click="outerClick" id="top">
+        <button @click.stop="btnClick">클릭</button>
+      </div>
+      <hr />
+      <form @submit.prevent="submitForm">
+        <input type="text" v-model="username" />
+        <button type="submit">제출</button>
+      </form>
+
+      <a href="http://naver.com">a 요소 클릭</a>
+      <div class="outer" @click.capture="captureClick">
+        외부요소
+        <button @click="btnClick">클릭</button>
+      </div>
+      <div class="outer" @click.self="selfClick">
+        외부요소
+        <button @click="btnClick">클릭</button>
+      </div>
+      <a href="#top" @click.once="moveSite"># 요소 클릭</a>
+      <hr />
+      <div class="con" @scroll.passive="handleScroll">
+        <p v-for="n in 50" :key="n">스크롤 테스트 콘텐츠</p>
+      </div>
+    </div>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script type="text/javascript">
+      const { createApp } = Vue;
+
+      let vm = createApp({
+        name: 'App',
+        data() {
+          return {
+            username: '홍길동',
+          };
+        },
+
+        methods: {
+          btnClick(e) {
+            console.log('버튼을 클릭했다.');
+          },
+          outerClick() {
+            console.log('외부 영역을 클릭함.');
+          },
+          submitForm() {
+            console.log('폼 처리완료', this.username);
+          },
+          captureClick() {
+            console.log('캡쳐 단계에서 먼저 실행됨');
+          },
+          selfClick() {
+            console.log('외부 요소 자체 클릭됨');
+          },
+          moveSite() {
+            console.log('once 실행');
+          },
+          handleScroll(e) {
+            // console.log('스크롤 위치', e);
+            console.log('스크롤 위치', e.target.scrollTop);
+          },
+        },
+      });
+      vm.mount('#app');
+    </script>
+  </body>
+</html>

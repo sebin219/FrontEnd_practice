@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>파일명</title>
+  </head>
+  <body>
+    <div id="app">
+      <label for="quantity">수량 :</label>
+      <input type="number" id="quantity" v-model="quantity" min="1" />
+      <label for="price">단가 :</label>
+      <input type="number" id="price" v-model="price" min="1000" />
+      <label for="discount">할인율 :</label>
+      <input type="number" id="discount" v-model="discount" min="0" />
+      <!-- <div> computed 최종 가격 : {{calculatedTotalPrice}}</div> -->
+      <div>최종 가격 : {{formattedPrice}}원</div>
+      <div>최종 가격 : {{total}}원</div>
+    </div>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script type="text/javascript">
+      const { createApp } = Vue;
+
+      let vm = createApp({
+        name: 'App',
+        data() {
+          return {
+            quantity: 1,
+            price: 1000,
+            discount: 0,
+            total: 1000,
+          };
+        },
+        computed: {
+          //   calculatedTotalPrice() {
+          //     let discountAmount =
+          //       this.price * this.quantity * (this.discount / 100);
+          //     this.total = this.price * this.quantity - discountAmount;
+          //     return this.total;
+          //   },
+          formattedPrice() {
+            return this.total.toLocaleString();
+          },
+        },
+        watch: {
+          quantity(newValue) {
+            this.calculatedTotalPrice();
+          },
+          price(newValue) {
+            this.calculatedTotalPrice();
+          },
+          discount(newValue) {
+            this.calculatedTotalPrice();
+          },
+        },
+        methods: {
+          calculatedTotalPrice() {
+            let discountAmount =
+              this.price * this.quantity * (this.discount / 100);
+            this.total = this.price * this.quantity - discountAmount;
+          },
+        },
+      });
+      vm.mount('#app');
+    </script>
+  </body>
+</html>

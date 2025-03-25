@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vue 3 키코드 이벤트 수식어 예제</title>
+    <style>
+      .container {
+        max-width: 400px;
+        padding: 20px;
+        font-family: Arial, sans-serif;
+      }
+      .input-group {
+        margin-bottom: 15px;
+      }
+      input {
+        padding: 8px;
+        width: 100%;
+        box-sizing: border-box;
+        margin-bottom: 5px;
+      }
+      .result {
+        padding: 10px;
+        background-color: #f5f5f5;
+        border-radius: 4px;
+        position: fixed;
+        left: 500px;
+        top: 20px;
+      }
+      .key-pressed {
+        background-color: #e2f2ff;
+        padding: 8px;
+        margin: 5px 0;
+        border-radius: 4px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app" class="container">
+      <h1>키코드 이벤트 수식어 예제</h1>
+
+      <div class="input-group">
+        <h3>방향키 수식어 (up, down, left, right)</h3>
+        <input
+          type="text"
+          placeholder="방향키를 눌러보세요"
+          @keyup.up="keyPressed('위쪽 방향키')"
+          @keyup.down="keyPressed('아래쪽 방향키')"
+          @keyup.left="keyPressed('왼쪽 방향키')"
+          @keyup.right="keyPressed('오른쪽 방향키')"
+        />
+      </div>
+
+      <div class="input-group">
+        <h3>특수키 수식어 (enter, esc, space, tab, delete)</h3>
+        <input
+          type="text"
+          placeholder="특수키를 눌러보세요"
+          @keyup.enter="keyPressed('엔터')"
+          @keyup.esc="keyPressed('ESC')"
+          @keyup.space="keyPressed('스페이스')"
+          @keyup.tab="keyPressed('탭')"
+          @keyup.delete="keyPressed('삭제')"
+        />
+      </div>
+
+      <div class="input-group">
+        <h3>조합키 수식어 (ctrl, alt, shift, meta)</h3>
+        <input
+          type="text"
+          placeholder="조합키를 눌러보세요"
+          @keyup.ctrl="keyPressed('CTRL')"
+          @keyup.alt="keyPressed('ALT')"
+          @keyup.shift="keyPressed('SHIFT')"
+          @keyup.meta="keyPressed('META')"
+        />
+      </div>
+
+      <div class="input-group">
+        <h3>키 조합 예제</h3>
+        <input
+          type="text"
+          placeholder="CTRL+ENTER 또는 CTRL+C를 눌러보세요"
+          @keyup.ctrl.enter="keyPressed('CTRL + ENTER')"
+          @keyup.ctrl.c="keyPressed('CTRL + C')"
+        />
+      </div>
+
+      <div class="input-group">
+        <h3>입력창</h3>
+        <input
+          type="text"
+          v-model="searchText"
+          placeholder="검색어를 입력하고 엔터를 누르세요"
+          @keyup.enter="search"
+        />
+      </div>
+
+      <div class="input-group">
+        <h3>ESC로 입력 취소</h3>
+        <input
+          type="text"
+          v-model="inputText"
+          placeholder="텍스트를 입력하고 ESC를 눌러 취소"
+          @keyup.esc="cancelInput"
+          @input="inputText = $event.target.value"
+        />
+        <p>현재 입력: {{ inputText }}</p>
+      </div>
+
+      <div class="result">
+        <h3>결과 로그</h3>
+        <div v-if="keyLogs.length === 0">아직 키 입력이 없습니다.</div>
+        <div v-for="(log, index) in keyLogs" :key="index" class="key-pressed">
+          {{ log }}
+        </div>
+      </div>
+    </div>
+
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script>
+      const app = Vue.createApp({
+        data() {
+          return {
+            keyLogs: [],
+            searchText: '',
+            inputText: '',
+          };
+        },
+        methods: {
+          keyPressed(key) {
+            this.keyLogs.unshift(
+              `"${key}" 키가 눌렸습니다. (${new Date().toLocaleTimeString()})`
+            );
+            // 로그가 너무 많아지지 않도록 최근 5개만 유지
+            if (this.keyLogs.length > 5) {
+              this.keyLogs.pop();
+            }
+          },
+          search() {
+            if (this.searchText.trim()) {
+              this.keyLogs.unshift(
+                `"${
+                  this.searchText
+                }" 검색을 실행합니다. (${new Date().toLocaleTimeString()})`
+              );
+              this.searchText = '';
+            }
+          },
+          cancelInput() {
+            this.keyLogs.unshift(
+              `입력이 취소되었습니다. 이전 값: "${
+                this.inputText
+              }" (${new Date().toLocaleTimeString()})`
+            );
+            this.inputText = '';
+          },
+        },
+      });
+
+      app.mount('#app');
+    </script>
+  </body>
+</html>
