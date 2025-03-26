@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <title>반사 신경 테스트</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <style>
+      #target-button {
+        padding: 20px 40px;
+        font-size: 20px;
+        display: none;
+        margin-top: 20px;
+      }
+      .ready {
+        background-color: #ccc;
+      }
+      .go {
+        background-color: #4caf50;
+        color: white;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <h2>⏱️ 반사 신경 테스트 게임</h2>
+      <button @click="startGame" :disabled="waiting">게임 시작</button>
+
+      <button
+        id="target-button"
+        :class="buttonClass"
+        @click="handleClick"
+        ref="targetButton"
+      >
+        클릭하세요!
+      </button>
+
+      <p v-if="reactionTime">
+        ⏰ 반응 속도: <strong>{{ reactionTime }}ms</strong>
+      </p>
+      <p v-if="tooSoon" style="color: red">
+        ❌ 너무 빨리 클릭했어요! 다시 시도해주세요.
+      </p>
+    </div>
+
+    <script>
+      const { createApp, ref, computed } = Vue;
+
+      createApp({
+        setup() {
+          const waiting = ref(false); // 대기상태여부
+          const startTime = ref(null); // 게임 시작시간
+          const reactionTime = ref(null); // 클릭 반응 시간
+          const tooSoon = ref(false); // 너무 빨리 클릭했는지 여부
+          const targetButton = ref(null); // button 요소 조작용
+
+          // 버튼클래스 waiting 값에 따라 회색 -> 녹색 변경경
+          const buttonClass = computed(() => {
+            return waiting.value ? 'ready' : 'go';
+          });
+
+          const startGame = () => {
+            waiting.value = true;
+            reactionTime.value = null;
+            tooSoon.value = false;
+
+            // 1~3초 사이
+            // Math.random() 함수는 0과 1 사이의 랜덤 숫자를 반환
+            const delay = Math.floor(Math.random() * 2000) + 1000;
+
+            // 버튼을 보이게 설정
+            targetButton.value.style.display = 'inline-block';
+
+            // delay 만큼 대기후 실행
+            setTimeout(() => {
+              // waiting 값 변경
+              waiting.value = false;
+
+              // 시작시간 기록
+              // performance.now() 함수는 현재 시간을 밀리초 단위로 반환
+              startTime.value = performance.now();
+            }, delay);
+          };
+
+          const handleClick = (event) => {
+            // waiting 때 클릭하면 너무 일찍클릭했다고 처리하기
+            if (waiting.value) {
+              // 너무 일찍 클릭
+              tooSoon.value = true;
+              reactionTime.value = null;
+              targetButton.value.style.display = 'none';
+
+              // 초기값으로 되돌리기
+              waiting.value = false; // 대기 상태 해제
+              return;
+            }
+
+            // 클릭 시간 계산
+            reactionTime.value = Math.floor(
+              performance.now() - startTime.value
+            );
+
+            // 버튼 숨김
+            targetButton.value.style.display = 'none';
+          };
+
+          return {
+            waiting,
+            reactionTime,
+            tooSoon,
+            targetButton,
+            buttonClass,
+            startGame,
+            handleClick,
+          };
+        },
+      }).mount('#app');
+    </script>
+  </body>
+</html>

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vue CDN Starter</title>
+  </head>
+  <body>
+    <div id="app">
+      <button
+        :style="{backgroundColor, color}"
+        @mouseover.stop="overEvent"
+        @mouseout.stop="outEvent"
+      >
+        테스트
+      </button>
+    </div>
+    <script src="https://unpkg.com/vue"></script>
+    <script>
+      const { createApp, ref } = Vue;
+
+      let vm = createApp({
+        name: 'App',
+        setup() {
+          const backgroundColor = ref('aqua');
+          const color = ref('black');
+
+          const overEvent = () => {
+            backgroundColor.value = 'purple';
+            color.value = 'yellow';
+          };
+
+          const outEvent = () => {
+            backgroundColor.value = 'aqua';
+            color.value = 'black';
+          };
+
+          return {
+            backgroundColor,
+            color,
+            overEvent,
+            outEvent,
+          };
+        },
+      }).mount('#app');
+    </script>
+  </body>
+</html>
