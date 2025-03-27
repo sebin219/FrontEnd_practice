@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>todoList</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css"
+      integrity="sha512-NmLkDIU1C/C88wi324HBc+S2kLhi08PN5GDeUVVVC/BVt/9Izdsc9SVeVfA1UZbY3sHUlDSyRXhCzHfr6hmPPw=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+      integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <div id="app">
+      <!-- 앱제목 -->
+      <header class="hd">
+        <h1>작심</h1>
+      </header>
+      <!-- 입력폼 -->
+      <div class="input-container">
+        <input
+          type="text"
+          placeholder="할일을 입력하세요"
+          v-model.trim="newTodo"
+          @Keyup.enter="addTodo"
+        />
+        <button @click="addTodo">추가</button>
+      </div>
+      <!-- 필터 탭 -->
+      <div class="filter-container">
+        <button @click="filter='all'" :class="{active : filter=='all'}">
+          전체
+        </button>
+        <button @click="filter='active'" :class="{active : filter=='active'}">
+          미완료
+        </button>
+        <button
+          @click="filter='completed'"
+          :class="{active : filter=='completed'}"
+        >
+          완료
+        </button>
+      </div>
+      <!-- 할일 목록 -->
+      <ul class="todo-list">
+        <li class="empty" v-if="todos.length===0">
+          <i class="fa fa-file" aria-hidden="true"></i>
+          <p>새로운 할일을 등록해주세요</p>
+        </li>
+        <li
+          v-for="todo in filteredTodos"
+          :key="todo.id"
+          :class="{completed: todo.completed}"
+          @click="todo.completed = !todo.completed"
+        >
+          <input type="checkbox" v-model="todo.completed" />
+          <span>{{todo.text}}</span>
+          <time>{{todo.createAt}}</time>
+          <i class="fa fa-trash" @click.stop="removeTodo(todo.id)"></i>
+        </li>
+      </ul>
+      <!-- 요약정보 -->
+      <div class="todo-summary">
+        <p><span>미완료항목</span><span>{{activeTodoCount}}</span></p>
+        <p><span>완료항목</span><span>{{completedTodoCount}}</span></p>
+        <button @click="clearCompleted">완료된 항목 삭제</button>
+      </div>
+    </div>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script type="text/javascript">
+      const { createApp } = Vue;
+
+      let vm = createApp({
+        name: 'App',
+        data() {
+          return {
+            todos: [],
+            newTodo: '',
+            filter: 'all', //active, completed
+          };
+        },
+        methods: {
+          addTodo() {
+            const text = this.newTodo;
+            if (!text) return;
+            this.todos.push({
+              id: Date.now(), //uuid
+              text: text,
+              completed: false,
+              createAt: new Date().toLocaleDateString(),
+            });
+            this.saveTodos();
+            this.newTodo = '';
+          },
+
+          // localstrage 에 저장
+          saveTodos() {
+            localStorage.setItem('todos', JSON.stringify(this.todos));
+          },
+          // localstrage 에서 호출하는 함수
+          loadTodos() {
+            const todos = localStorage.getItem('todos');
+            todos ? (this.todos = JSON.parse(todos)) : [];
+          },
+          removeTodo(id) {
+            this.todos = this.todos.filter((todo) => todo.id !== id);
+            this.saveTodos();
+          },
+
+          clearCompleted() {
+            this.todos = this.todos.filter((todo) => !todo.completed);
+            this.saveTodos();
+          },
+        },
+        mounted() {
+          this.loadTodos();
+        },
+        computed: {
+          filteredTodos() {
+            if (this.filter == 'all') return this.todos;
+            if (this.filter == 'active')
+              return this.todos.filter((todo) => !todo.completed);
+            if (this.filter == 'completed')
+              return this.todos.filter((todo) => todo.completed);
+          },
+          activeTodoCount() {
+            return this.todos.filter((todo) => !todo.completed).length;
+          },
+          completedTodoCount() {
+            return this.todos.filter((todo) => todo.completed).length;
+          },
+        },
+      });
+      vm.mount('#app');
+    </script>
+  </body>
+</html>
