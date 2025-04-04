@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import apiClient from '@/utils/axios';
 
 export const useStudentStore = defineStore('studentStore', () => {
@@ -16,6 +16,7 @@ export const useStudentStore = defineStore('studentStore', () => {
     }
   };
   //게터
+  const studentCount = computed(() => students.value.length);
 
-  return { fetchStudents, students };
+  return { fetchStudents, students, studentCount };
 });
