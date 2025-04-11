@@ -1,0 +1,111 @@
+@import url('https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css');
+* {
+  box-sizing: border-box;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.container {
+  max-width: 900px;
+  width: calc(100% - 2rem);
+  margin: auto;
+  /* border: 1px solid red; */
+  padding: 2rem 0;
+}
+
+h2 {
+  font-size: 1.25em;
+  font-weight: bold;
+  padding: 1em 0;
+  color: dodgerblue;
+}
+button {
+  border: none;
+  outline: none;
+  padding: 0.5em 1em;
+  border-radius: 10px;
+  transition: 0.3s;
+}
+
+/*  */
+
+label {
+  font-weight: bold;
+}
+textarea {
+  resize: none;
+  height: 200px;
+}
+input,
+textarea {
+  padding: 0.5em;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+input:focus,
+input:hover,
+textarea:focus,
+textarea:hover {
+  outline: none;
+  border-color: #007bff;
+}
+input::placeholder {
+  color: #ccc;
+}
+
+.btns-group {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1em;
+  gap: 1em;
+}
+
+.btns-group button:hover {
+  background-color: #c0c0c0;
+}
+
+.loading,
+.error,
+.not-found,
+.error-message {
+  text-align: center;
+  padding: 2rem;
+  color: #666;
+}
+
+.error,
+.not-found,
+.error-message {
+  color: #dc3545;
+}
+
+.form-error {
+  padding: 0.5rem;
+  margin-bottom: 1rem;
+  border: 1px solid #dc3545;
+  border-radius: 5px;
+  background-color: #f8d7da;
+}
+
+.back-action {
+  margin-top: 1rem;
+}
+button.point {
+  background-color: dodgerblue;
+  color: white;
+}
+button.point:hover {
+  background-color: rgb(15, 98, 181);
+}
+
+button.danger {
+  background-color: #dc3545;
+  color: white;
+}
+button.danger:hover {
+  background-color: #93101d;
+  color: white;
+}
