@@ -7,7 +7,7 @@ import SummaryContainer from './components/SummaryContainer.vue'
 
 import { computed, onMounted, ref } from 'vue'
 import { useTodos } from './api/useTodos'
-//useTodos를 호출함으로써 todo 관련 기능을 사용용
+//useTodos를 호출함으로써 todo 관련 기능을 사용
 const { todos, loadng, error, fetchTodos, addTodo, updateTodo, deleteTodo, deleteCompletedTodos } =
   useTodos()
 
